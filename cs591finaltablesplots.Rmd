@@ -1,0 +1,48 @@
+---
+title: "cs591finaltablesplots"
+author: "Aaron Lightner"
+date: "May 2, 2018"
+output: word_document
+---
+
+```{r}
+library(igraph)
+library(tidyverse)
+library(data.table)
+library(knitr)
+
+source('~/Desktop/Docs/Spring 2018 Classes/CS 591/igraph_projects/cs591_cpdetect_funclist.R')
+
+g <- read_graph('facebook_combined.txt', format='edgelist')
+g <- as.undirected(g)
+
+nodecentr <- node.centrality(g)
+centr_measure <- centrality.measure(g)
+labelrows <- c('degree','eccentricity','closeness','between','pagerank',
+               'authority','hub')
+df <- data.table(labelrows,nodecentr, centr_measure)
+
+cclist_val1 <- read_csv('cclist_values.csv')
+cclist1 <- read_csv('cclist.csv')
+
+nodelist <- unlist(df$`FB (max. node)`)
+cclist_val1$x[cclist1$x %in% nodelist]
+df$cascade <- c(0.07,0.07,0.07,0.07,0.07,0.1,0.1)
+
+colnames(df) <- c('centrality measure','FB (max. node)', 'FB (values)','cascade capacity')
+
+kable(df, 
+                       caption = 'Table 1. Node(s) in each network with the 
+                       highest scores in terms of centrality measures (listed 
+                       in the leftmost column). Column labels include network 
+                       labels, (max. node) indicates the node with the highest 
+                       centrality measure in the network, and (values) indicate 
+                       the maximized centrality measure itself for that node. For 
+                       entries ending in "...", see the appendix for a complete 
+                       list of values.')
+
+
+
+
+```
+
